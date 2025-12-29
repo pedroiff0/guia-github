@@ -1,10 +1,4 @@
 repos:
-  - repo: https://github.com/ejwa/validate-commit-msg
-    rev: v1.0.0
-    hooks:
-      - id: validate-commit-msg
-        stages: [commit-msg]
-        args: ["--pattern", "^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\\([a-z0-9_-]+\\))?:\\s.+$"]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:

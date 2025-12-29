@@ -1,0 +1,35 @@
+name: Commit message check (PR)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  commit-message-check:
+    name: Validate commit messages in PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch PR commits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching commits for PR #${{ github.event.pull_request.number }}"
+          curl -sSL -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | jq -r '.[].commit.message' > pr_commits.txt
+          echo "Saved $(wc -l < pr_commits.txt) commit messages"
+      - name: Validate commit messages format
+        run: |
+          pattern='^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\([a-z0-9._-]+\))?: .{1,100}$'
+          invalid=0
+          while IFS= read -r msg; do
+            echo "Checking: $msg"
+            if ! echo "$msg" | grep -Eq "$pattern"; then
+              echo "INVALID: $msg"
+              invalid=1
+            fi
+          done < pr_commits.txt
+          if [ "$invalid" -ne 0 ]; then
+            echo "::error::One or more commits do not follow Conventional Commits. Use: type(scope): subject"
+            exit 1
+          fi
+      - name: Success
+        run: echo "All commit messages follow the expected pattern."
