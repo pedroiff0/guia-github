@@ -1,0 +1,11 @@
+name: Manual actions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show message
+        run: echo "This is a manual workflow for testing actions in the repo."
