@@ -1,4 +1,4 @@
-name: Commit Verify
+name: Verificação de Commits
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   verify-commits:
+    name: Verificar commits
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,16 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up jq
+      - name: Instalar jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Get commit SHAs
+      - name: Obter SHAs dos commits
         id: commits
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE=${{ github.event.pull_request.base.sha }}
             HEAD=${{ github.event.pull_request.head.sha }}
-            echo "PR base=$BASE head=$HEAD"
+            echo "Base da PR=$BASE head=$HEAD"
             shas=$(git rev-list $BASE..$HEAD)
           else
             if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
@@ -38,34 +39,39 @@ jobs:
           echo "$shas" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Validate commit messages with script
+      - name: Validar mensagens de commit com script
         run: |
           chmod +x ./scripts/validate-commit-msg.sh || true
           set -e
           shas=$(cat shas.txt)
           if [ -z "$shas" ]; then
-            echo "No commits found to validate." && exit 0
+            echo "Nenhum commit encontrado para validar." && exit 0
           fi
           for sha in $shas; do
             ./scripts/validate-commit-msg.sh "$sha" || exit 1
           done
 
-      - name: Inline pattern check (fallback)
+      - name: Verificação de padrão (fallback)
         run: |
           pattern='^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\([a-z0-9._-]+\))?: .{1,150}$'
           invalid=0
-          # Read commit SHAs from shas.txt and validate the SUBJECT (first line) of each commit
+          # Ler SHAs de shas.txt e validar o SUBJECT (primeira linha) de cada commit
           while IFS= read -r sha; do
-            msg=$(git log -1 --format=%s "$sha")
-            echo "Checking subject: $msg"
-            if ! echo "$msg" | grep -Eq "$pattern"; then
-              echo "INVALID: $msg"
+            subject=$(git log -1 --format=%s "$sha")
+            # Pular commits de merge e subjects vazios
+            if [ -z "$subject" ] || echo "$subject" | grep -qE "^Merge"; then
+              echo "Pulando commit $sha (merge ou assunto vazio): $subject"
+              continue
+            fi
+            echo "Verificando assunto: $subject"
+            if ! echo "$subject" | grep -Eq "$pattern"; then
+              echo "INVÁLIDO: $subject"
               invalid=1
             fi
           done < shas.txt
           if [ "$invalid" -ne 0 ]; then
-            echo "::error::One or more commits do not follow Conventional Commits." && exit 1
+            echo "::error::Um ou mais commits não seguem o padrão Conventional Commits." && exit 1
           fi
 
-      - name: Success
-        run: echo "All checked commit messages follow the pattern."
+      - name: Sucesso
+        run: echo "Todos os assuntos de commit seguem o padrão."
