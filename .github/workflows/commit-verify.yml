@@ -1,0 +1,69 @@
+name: Commit Verify
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  verify-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get commit SHAs
+        id: commits
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE=${{ github.event.pull_request.base.sha }}
+            HEAD=${{ github.event.pull_request.head.sha }}
+            echo "PR base=$BASE head=$HEAD"
+            shas=$(git rev-list $BASE..$HEAD)
+          else
+            if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+              shas=$(git rev-list ${{ github.sha }})
+            else
+              shas=$(git rev-list ${{ github.event.before }}..${{ github.sha }})
+            fi
+          fi
+          echo "$shas" > shas.txt
+          echo "shas<<EOF" >> $GITHUB_OUTPUT
+          echo "$shas" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Validate commit messages with script
+        run: |
+          chmod +x ./scripts/validate-commit-msg.sh || true
+          set -e
+          shas=$(cat shas.txt)
+          if [ -z "$shas" ]; then
+            echo "No commits found to validate." && exit 0
+          fi
+          for sha in $shas; do
+            ./scripts/validate-commit-msg.sh "$sha" || exit 1
+          done
+
+      - name: Inline pattern check (fallback)
+        run: |
+          pattern='^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\([a-z0-9._-]+\))?: .{1,150}$'
+          invalid=0
+          while IFS= read -r msg; do
+            echo "Checking: $msg"
+            if ! echo "$msg" | grep -Eq "$pattern"; then
+              echo "INVALID: $msg"
+              invalid=1
+            fi
+          done < <(git log --format=%B ${GITHUB_SHA} -n 50)
+          if [ "$invalid" -ne 0 ]; then
+            echo "::error::One or more commits do not follow Conventional Commits." && exit 1
+          fi
+
+      - name: Success
+        run: echo "All checked commit messages follow the pattern."
