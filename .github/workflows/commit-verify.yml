@@ -59,12 +59,12 @@ jobs:
           while IFS= read -r sha; do
             subject=$(git log -1 --format=%s "$sha")
             # Pular commits de merge e subjects vazios
-            if [ -z "$subject" ] || echo "$subject" | grep -qE "^Merge"; then
+            if [ -z "$subject" ] || echo "$subject" | grep -qi "^merge"; then
               echo "Pulando commit $sha (merge ou assunto vazio): $subject"
               continue
             fi
             echo "Verificando assunto: $subject"
-            if ! echo "$subject" | grep -Eq "$pattern"; then
+            if ! echo "$subject" | grep -Eqi "$pattern"; then
               echo "INVÁLIDO: $subject"
               invalid=1
             fi

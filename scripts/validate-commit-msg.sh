@@ -5,8 +5,8 @@ invalid=0
 for sha in "$@"; do
   subject=$(git log --format=%s -n 1 "$sha")
   echo "Verificando commit $sha: $subject"
-  # Pular commits de merge
-  if echo "$subject" | grep -qE "^Merge"; then
+  # Pular commits de merge (case-insensitive)
+  if echo "$subject" | grep -qi "^merge"; then
     echo "Pulando commit de merge: $subject"
     continue
   fi
@@ -15,7 +15,7 @@ for sha in "$@"; do
     invalid=1
     continue
   fi
-  if ! echo "$subject" | grep -Eq "$pattern"; then
+  if ! echo "$subject" | grep -Eqi "$pattern"; then
     echo "INVÁLIDO: $subject"
     invalid=1
   fi
