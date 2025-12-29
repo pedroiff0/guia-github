@@ -1,7 +1,0 @@
-# labeler config: map paths to labels
-"docs/**": docs
-"*.md": docs
-"*.py": enhancement
-"tests/**": test
-"examples/**": enhancement
-"requirements.txt": chore
