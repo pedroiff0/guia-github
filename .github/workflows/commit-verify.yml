@@ -54,13 +54,15 @@ jobs:
         run: |
           pattern='^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\([a-z0-9._-]+\))?: .{1,150}$'
           invalid=0
-          while IFS= read -r msg; do
-            echo "Checking: $msg"
+          # Read commit SHAs from shas.txt and validate the SUBJECT (first line) of each commit
+          while IFS= read -r sha; do
+            msg=$(git log -1 --format=%s "$sha")
+            echo "Checking subject: $msg"
             if ! echo "$msg" | grep -Eq "$pattern"; then
               echo "INVALID: $msg"
               invalid=1
             fi
-          done < <(git log --format=%B ${GITHUB_SHA} -n 50)
+          done < shas.txt
           if [ "$invalid" -ne 0 ]; then
             echo "::error::One or more commits do not follow Conventional Commits." && exit 1
           fi
