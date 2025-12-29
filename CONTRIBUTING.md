@@ -3,7 +3,7 @@
 Obrigado por querer contribuir! Siga este fluxo mínimo:
 
 1. Fork ou crie uma branch no repositório (`feature/<ticket>-descrição`).
-2. Use Conventional Commits (ex: `feat:`, `fix:`, `chore:`). See `docs/commits.md` for a minimal guide.
+2. Use Conventional Commits (ex: `feat:`, `fix:`, `chore:`). Consulte `docs/commits.md` para o guia detalhado (mensagens em português, exceto o type).
 3. Adicione testes quando relevante e atualize documentação.
 4. Abra uma PR descrevendo o contexto, link para issue (se houver) e checklist de verificação.
 
