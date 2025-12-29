@@ -1,10 +1,16 @@
 # Contributing to guia-github
 
-Obrigado por querer contribuir! Siga este fluxo mínimo:
+Thanks for wanting to contribute! Please follow this minimal workflow:
 
-1. Fork ou crie uma branch no repositório (`feature/<ticket>-descrição`).
-2. Use Conventional Commits (ex: `feat:`, `fix:`, `chore:`). Consulte `docs/commits.md` para o guia detalhado (mensagens em português, exceto o type).
-3. Adicione testes quando relevante e atualize documentação.
-4. Abra uma PR descrevendo o contexto, link para issue (se houver) e checklist de verificação.
+1. Fork or create a branch in the repository (`feature/<ticket>-description`).
+2. Use Conventional Commits (e.g.: `feat:`, `fix:`, `chore:`). See `docs/commits.md` for the full guide (English is the default language).
+3. Add tests where relevant and update documentation.
+4. Open a PR describing the context, link to the issue if any, and include a verification checklist.
 
-Para questões de segurança, veja `SECURITY.md`.
+PR checklist (suggested):
+- [ ] Tests executed
+- [ ] Linter OK
+- [ ] Documentation updated
+- [ ] Someone reviewed
+
+For security issues, see `SECURITY.md`.

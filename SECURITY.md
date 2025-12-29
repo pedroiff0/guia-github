@@ -1,7 +1,7 @@
 # Security policy
 
-Se você encontrar uma vulnerabilidade de segurança, por favor:
-1. Envie um email para `pedroiff0@gmail.com` com detalhes e steps para reproduzir.
-2. Inclua versão, impacto e possíveis mitigations.
+If you discover a security vulnerability, please:
+1. Email `pedroiff0@gmail.com` with details and steps to reproduce the issue.
+2. Include affected versions, impact and suggested mitigations.
 
-Não divulgue publicamente a vulnerabilidade até que os mantenedores tenham tido a chance de avaliar e mitigar o problema.
+Do not publicly disclose the vulnerability until maintainers have had time to assess and mitigate it.

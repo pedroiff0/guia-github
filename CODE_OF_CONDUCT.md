@@ -1,8 +1,8 @@
 # Code of Conduct
 
-Todos os contribuidores devem seguir regras básicas de respeito e profissionalismo.
+All contributors are expected to follow basic rules of respect and professionalism.
 
-- Seja respeitoso e inclusivo.
-- Não seja ofensivo, discriminatório ou ameaçador.
+- Be respectful and inclusive.
+- Do not be offensive, discriminatory, or threatening.
 
-Reportar comportamento inapropriado para os mantenedores através do canal indicado em `SECURITY.md`.
+Report inappropriate behavior to the maintainers via the contact channel described in `SECURITY.md`.
